@@ -11,7 +11,7 @@ dotenv.config();
 async function serverStart() {
   // Initialize SocketService for real-time communication
   const socketService = new SocketService();
-  
+
   // Create and start an HTTP server to serve the static files and WebSocket server endpoint
   const httpServer = http.createServer();
   const PORT = process.env.PORT || 8000;
@@ -22,6 +22,8 @@ async function serverStart() {
   httpServer.listen(PORT, () =>
     console.log(`HTTP server listening on port: ${PORT}`)
   );
+  //initialize event Listener...
+  socketService.eventListener();
 }
 
 serverStart();
