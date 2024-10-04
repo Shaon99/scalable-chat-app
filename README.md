@@ -1,1 +1,1 @@
-Scalable chat app Next js node js socket redis kafka postgresql typescript and docker... started
+Scalable chat app Next js shadcn ui node js socket redis kafka postgresql typescript and docker... started
