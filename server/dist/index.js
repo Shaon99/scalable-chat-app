@@ -30,6 +30,8 @@ function serverStart() {
         //initialize socket server on httpServer
         socketService.io.attach(httpServer);
         httpServer.listen(PORT, () => console.log(`HTTP server listening on port: ${PORT}`));
+        //initialize event Listener...
+        socketService.eventListener();
     });
 }
 serverStart();
