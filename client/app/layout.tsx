@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  SignIn,
+  UserButton,
+} from "@clerk/nextjs";
 import "./globals.css";
 import { SocketProvider } from "../context/socketProvider";
 
@@ -25,14 +32,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <SocketProvider>
+    <ClerkProvider>
+      <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
+          <div className="min-h-screen flex flex-col justify-between">
+            <SignedOut>
+              <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-indigo-500 text-white">
+                <SignIn routing="hash" />
+              </div>
+            </SignedOut>
+
+            <SignedIn>
+              <header className="flex justify-between items-center bg-white shadow-md p-4">
+                <h1 className="text-2xl font-bold">Alaap</h1>
+                <UserButton showName />
+              </header>
+              <main className="flex-1 container mx-auto p-4">
+                <div className="bg-white rounded-lg shadow-lg pt-2 pb-10 px-32">
+                  <SocketProvider>{children}</SocketProvider>
+                </div>
+              </main>
+            </SignedIn>
+          </div>
         </body>
-      </SocketProvider>
-    </html>
+      </html>
+    </ClerkProvider>
   );
 }
