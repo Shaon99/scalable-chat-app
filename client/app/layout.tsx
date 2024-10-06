@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-  SignIn,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider, SignedIn, SignedOut, SignIn } from "@clerk/nextjs";
 import "./globals.css";
 import { SocketProvider } from "../context/socketProvider";
 
@@ -43,16 +37,9 @@ export default function RootLayout({
                 <SignIn routing="hash" />
               </div>
             </SignedOut>
-
             <SignedIn>
-              <header className="flex justify-between items-center bg-white shadow-md p-4">
-                <h1 className="text-2xl font-bold">Alaap</h1>
-                <UserButton showName />
-              </header>
-              <main className="flex-1 container mx-auto p-4">
-                <div className="bg-white rounded-lg shadow-lg pt-2 pb-10 px-32">
-                  <SocketProvider>{children}</SocketProvider>
-                </div>
+              <main className="container mx-auto">
+                <SocketProvider>{children}</SocketProvider>
               </main>
             </SignedIn>
           </div>
