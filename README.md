@@ -1,1 +1,1 @@
-Scalable chat app Next js shadcn ui node js socket redis kafka postgresql prisma typescript and docker... started
+Scalable chat app Next js, Clerk Auth, shadcn ui node js socket redis kafka postgresql prisma typescript and docker... started
