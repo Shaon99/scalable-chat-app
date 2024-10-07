@@ -1,8 +1,16 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useSocket } from "../context/socketProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+
 import {
   Send,
   SquarePen,
@@ -11,14 +19,15 @@ import {
   Mail,
   Ellipsis,
   Image,
+  Paperclip,
 } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Home() {
   const { sendMessage, messages } = useSocket();
   const [message, setMessage] = useState("");
-  const { user } = useUser();
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const handleSend = () => {
     if (message.trim()) {
@@ -27,13 +36,20 @@ export default function Home() {
     }
   };
 
-  if (!user) {
-    return <div>Loading...</div>; // Show a loading state while user data is fetched
-  }
-
-  // Access the username or any other user properties
-  const username = user.fullName; // Assuming 'username' is a property in your user object
-  const loggedInUserId = user?.id; // Get the logged-in user's ID
+  // if (!user) {
+  //   return (
+  //     <div className="h-screen w-screen flex items-center justify-center bg-gray-100">
+  //       {/* Loading skeleton */}
+  //       <div className="flex flex-col items-center">
+  //         {/* Circle skeleton */}
+  //         <div className="h-16 w-16 bg-gray-300 rounded-full animate-pulse mb-4"></div>
+  //         {/* Line skeletons */}
+  //         <div className="h-4 w-48 bg-gray-300 rounded-full animate-pulse mb-2"></div>
+  //         <div className="h-4 w-32 bg-gray-300 rounded-full animate-pulse"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     // <div className="flex flex-col h-full max-h-screen bg-gray-700 p-4 rounded-md">
@@ -95,20 +111,20 @@ export default function Home() {
     //     </Button>
     //   </div>
     // </div>
-    <div className="grid grid-cols-12 gap-0 border-b border-gray-300">
+    <div className="grid grid-cols-12 gap-0">
       {/* sidebar chat */}
       <div className="col-span-3">
         <div className="p-5 flex items-center justify-between border-b border-r border-gray-300">
           <h2 className="text-lg font-bold flex items-center">
             Messages{" "}
-            <span className="ml-2 text-lg font-bold text-purple-500">(14)</span>
+            <span className="ml-2 text-lg font-bold text-purple-400">(14)</span>
           </h2>
           <div className="flex space-x-3">
             <SquarePen className="h-5 w-5 text-gray-800 font-light" />
             <Search className="h-5 w-5 text-gray-800 font-light" />
           </div>
         </div>
-        <div className="h-screen border-r border-gray-300">
+        <div className="h-screen border-r border-gray-300 overflow-y-auto">
           <div className="p-5 flex items-center justify-between">
             <span className="flex items-center text-green-500 font-bold">
               <svg
@@ -149,11 +165,14 @@ export default function Home() {
           </div>
           <div className="px-5 py-6">
             <h2 className="text-lg font-bold flex items-center">
-              <Mail className="h-5 w-5 mr-3 text-purple-500 font-light" />
+              <Mail className="h-5 w-5 mr-3 text-purple-400 font-light" />
               Inbox
             </h2>
 
-            <div className="flex items-center space-x-3 py-3">
+            <div
+              onClick={() => setSelectedUser({ name: "John Doe" })}
+              className="flex cursor-pointer items-center space-x-3 py-3"
+            >
               <div className="relative">
                 <Avatar>
                   <AvatarImage
@@ -184,7 +203,7 @@ export default function Home() {
                 </div>
               </div>
               {/* Unread Count Badge */}
-              <div className="flex items-center justify-center w-4 h-4 bg-purple-500 text-white text-xs font-bold rounded-full">
+              <div className="flex items-center justify-center w-4 h-4 bg-purple-400 text-white text-xs font-bold rounded-full">
                 5
               </div>
             </div>
@@ -225,139 +244,216 @@ export default function Home() {
 
       {/* main chat */}
       <div className="col-span-6">
-        <div className="p-4 flex items-center justify-between border-b border-r border-gray-300">
-          <div className="relative">
-            <Avatar className="h-9 w-9">
-              <AvatarImage
-                src="https://github.com/shadcn.png"
-                alt="@shadcn"
-                className="h-9 w-9"
-              />
-              <AvatarFallback className="h-9 w-9 text-sm">CN</AvatarFallback>{" "}
-            </Avatar>
-            <div className="absolute bottom-0 right-0">
+        {selectedUser ? (
+          <>
+            <div className="p-4 flex items-center justify-between border-b border-r border-gray-300">
+              <div className="relative">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt="@shadcn"
+                    className="h-9 w-9"
+                  />
+                  <AvatarFallback className="h-9 w-9 text-sm">
+                    CN
+                  </AvatarFallback>{" "}
+                </Avatar>
+                <div className="absolute bottom-0 right-0">
+                  <svg
+                    className="h-2 w-2 text-green-500"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="4" cy="4" r="4" />
+                  </svg>
+                </div>
+              </div>
+              <div className="flex-1 px-3">
+                <div className="flex justify-between items-center">
+                  <div className="font-bold">John Doe</div>
+                  <div className="flex space-x-3">
+                    <Search className="h-5 w-5 text-gray-800 font-light" />
+                    <Ellipsis className="h-5 w-5 text-gray-800 font-light" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="h-screen flex flex-col bg-[#faf8f4]">
+              {/* Chat Container (Scrollable) */}
+              <div className="flex-grow overflow-y-auto p-4 border-r border-gray-300 bg-pattern">
+                {/* Chat Messages */}
+                <div className="mb-2">
+                  {/* Message from John Doe */}
+                  <div className="flex items-start space-x-2">
+                    <div>
+                      <p className="text-xs text-gray-900 font-bold mb-1">
+                        John Doe • 10:45 AM
+                      </p>
+                      <div className="bg-white p-3 rounded-lg max-w-sm shadow-md">
+                        <p className="text-gray-700 text-sm">
+                          Hello, how are you today?
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Your Message */}
+                <div className="mb-2 flex justify-end">
+                  <div>
+                    <p className="text-xs text-gray-900 font-bold mb-1 text-right">
+                      You • 10:46 AM
+                    </p>
+                    <div className="bg-[#f2ece2] p-3 rounded-lg max-w-sm shadow-md">
+                      <p className="text-gray-700 text-sm">
+                        I'm good, thanks! What about you?
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {/* Add more messages here as needed */}
+              </div>
+
+              {/* Input Field (Fixed to Bottom) */}
+              <div className="w-full px-6 pt-3 flex space-x-4 items-center pb-24">
+                <Textarea
+                  placeholder="Type your message..."
+                  className="w-full p-2 min-h-0 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm"
+                />
+
+                <label className="cursor-pointer">
+                  <input type="file" className="hidden" />
+                  <Paperclip className="h-5 w-5 text-gray-500 font-semibold" />
+                </label>
+                <Button
+                  onClick={handleSend}
+                  className="rounded-lg bg-purple-400 p-3"
+                  title="Send"
+                >
+                  <Send className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="h-screen flex flex-col justify-center items-center bg-[#faf8f4]">
+            <div className="flex flex-col items-center p-8">
               <svg
-                className="h-2 w-2 text-green-500"
-                fill="currentColor"
-                viewBox="0 0 8 8"
+                className="h-16 w-16 text-purple-400 mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <circle cx="4" cy="4" r="4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2v-9a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-2.828-2.828a1 1 0 00-.707-.293H9a2 2 0 00-2 2v3m12 0V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2h3"
+                ></path>
               </svg>
-            </div>
-          </div>
-          <div className="flex-1 px-3">
-            <div className="flex justify-between items-center">
-              <div className="font-bold">John Doe</div>
-              <div className="flex space-x-3">
-                <Search className="h-5 w-5 text-gray-800 font-light" />
-                <Ellipsis className="h-5 w-5 text-gray-800 font-light" />
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* <div className="h-screen flex items-start bg-[#f8f7f3] bg-pattern border-r border-gray-300  overflow-y-auto p-4">
-          
-        </div> */}
-        <div className="h-screen flex flex-col bg-[#faf8f4]">
-          {/* Chat Container (Scrollable) */}
-          <div className="flex-grow overflow-y-auto p-4 border-r border-gray-300 bg-pattern">
-            {/* Chat Messages */}
-            <div className="mb-4">
-              <div className="bg-white p-3 rounded-lg max-w-sm shadow-md">
-                <p className="text-gray-700">Hello, how are you today?</p>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">10:45 AM</p>
-            </div>
 
-            <div className="mb-4 flex justify-end">
-              <div className="bg-[#f2ece2] p-3 rounded-lg max-w-sm shadow-md">
-                <p className="text-gray-700">
-                  I'm good, thanks! What about you?
-                </p>
-              </div>
-              <p className="text-xs text-gray-500 mt-1 text-right">10:46 AM</p>
+              {/* Text */}
+              <p className="text-gray-600 text-lg font-bold mb-2">
+                No Conversations Selected
+              </p>
+              <p className="text-gray-400 text-sm">
+                Select a user to start a conversation.
+              </p>
             </div>
-
-            {/* Add more messages here as needed */}
           </div>
-
-          {/* Input Field (Fixed to Bottom) */}
-          <div className="w-full px-6 pt-3 flex items-center pb-24">
-            <input
-              type="text"
-              placeholder="Type a message..."
-              className="w-full p-2 mr-3 rounded-lg border border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-200"
-            />
-            <Button onClick={handleSend} className="rounded-full" title="Send">
-              <Send className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* right bar */}
       <div className="col-span-3">
         <div className="p-5 flex items-center justify-between">
           <h2 className="text-lg font-bold flex items-center">Profile</h2>
-          <div className="flex space-x-3">
-            <Ellipsis className="h-5 w-5 text-gray-800 font-light" />
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="cursor-pointer" asChild>
+              <Ellipsis className="h-5 w-5 text-gray-800 font-light" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white border rounded-md shadow-lg cursor-pointer">
+              <DropdownMenuLabel className="flex items-center">
+                <Avatar className="cursor-pointer h-6 w-6 mr-3">
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt="@shadcn"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                Profile
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer "
+                onSelect={() => alert("Log out selected")}
+              >
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <div className="flex flex-col items-center p-5">
-          <div className="flex items-center justify-center">
-            <Avatar className="h-20 w-20">
-              <AvatarImage
-                src="https://github.com/shadcn.png"
-                alt="@shadcn"
-                className="h-20 w-20"
-              />
-              <AvatarFallback className="h-20 w-20 text-sm">CN</AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="font-bold text-lg mt-1">John Doe</div>{" "}
-          {/* Added margin for spacing */}
-          <div className="text-purple-500 text-sm">Software Engineer</div>
-          <div className="text-purple-500 text-sm">jhondoer@gmail.com</div>
-        </div>
-        <div className="p-5">
-          <h2 className="text-lg font-bold flex items-center">
-            <Image className="h-5 w-5 mr-3 text-purple-500 font-light" />
-            Media
-          </h2>
-          <div className="grid grid-cols-3 gap-1 p-4">
-            <img
-              className="rounded-lg w-full h-32 object-cover"
-              src="https://via.placeholder.com/300x300"
-              alt="media1"
-            />
-            <img
-              className="rounded-lg w-full h-32 object-cover"
-              src="https://via.placeholder.com/300x300"
-              alt="media2"
-            />
-            <img
-              className="rounded-lg w-full h-32 object-cover"
-              src="https://via.placeholder.com/300x300"
-              alt="media3"
-            />
-            <img
-              className="rounded-lg w-full h-32 object-cover"
-              src="https://via.placeholder.com/300x300"
-              alt="media4"
-            />
-            <img
-              className="rounded-lg w-full h-32 object-cover"
-              src="https://via.placeholder.com/300x300"
-              alt="media5"
-            />
-            <img
-              className="rounded-lg w-full h-32 object-cover"
-              src="https://via.placeholder.com/300x300"
-              alt="media6"
-            />
-          </div>
-        </div>
+        {selectedUser && (
+          <>
+            <div className="flex flex-col items-center p-5">
+              <div className="flex items-center justify-center">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt="@shadcn"
+                    className="h-20 w-20"
+                  />
+                  <AvatarFallback className="h-20 w-20 text-sm">
+                    CN
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="font-bold text-lg mt-1">John Doe</div>{" "}
+              {/* Added margin for spacing */}
+              <div className="text-purple-400 text-sm">jhondoer@gmail.com</div>
+            </div>
+            <div className="p-5">
+              <h2 className="text-lg font-bold flex items-center">
+                <Image className="h-5 w-5 mr-3 text-purple-400 font-light" />
+                Media
+              </h2>
+              <div className="grid grid-cols-3 gap-2 py-4">
+                <img
+                  className="rounded-lg w-full h-32 object-cover"
+                  src="https://via.placeholder.com/300x300"
+                  alt="media1"
+                />
+                <img
+                  className="rounded-lg w-full h-32 object-cover"
+                  src="https://via.placeholder.com/300x300"
+                  alt="media2"
+                />
+                <img
+                  className="rounded-lg w-full h-32 object-cover"
+                  src="https://via.placeholder.com/300x300"
+                  alt="media3"
+                />
+                <img
+                  className="rounded-lg w-full h-32 object-cover"
+                  src="https://via.placeholder.com/300x300"
+                  alt="media4"
+                />
+                <img
+                  className="rounded-lg w-full h-32 object-cover"
+                  src="https://via.placeholder.com/300x300"
+                  alt="media5"
+                />
+                <img
+                  className="rounded-lg w-full h-32 object-cover"
+                  src="https://via.placeholder.com/300x300"
+                  alt="media6"
+                />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

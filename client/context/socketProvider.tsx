@@ -1,10 +1,21 @@
 "use client";
-import React, { useCallback, useContext, useEffect, useState, useMemo } from "react";
-import { useUser } from "@clerk/nextjs";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 const { io, Socket } = require("socket.io-client");
 
 interface SocketProviderProps {
   children?: React.ReactNode;
+}
+
+interface User {
+  id: string;
+  fullName: string;
+  imageUrl: string;
 }
 
 interface ISocketContext {
@@ -33,7 +44,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     Array<{ userId: string; user: string; imageUrl: string; message: string }>
   >([]);
 
-  const { user } = useUser();
+  const user: User = {
+    id: "user123",
+    fullName: "John Doe",
+    imageUrl: "https://example.com/john-doe.jpg",
+  };
 
   // Memoize user details to avoid unnecessary recalculations
   const username = useMemo(() => user?.fullName ?? "Guest", [user]);
@@ -63,10 +78,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         imageUrl: string;
       };
 
-      setMessages((prev) => [
-        ...prev,
-        { userId, user, imageUrl, message },
-      ]);
+      setMessages((prev) => [...prev, { userId, user, imageUrl, message }]);
     } catch (error) {
       console.error("Error parsing message:", error);
     }

@@ -1,12 +1,23 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default clerkMiddleware();
+export async function middleware(req: NextRequest) {
+//   const token = req.cookies.get('token')?.value; // Replace 'token' with the name of the token you're using
+//   const { pathname } = req.nextUrl;
 
-export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
+//   // If no token and not accessing the login page, redirect to login
+//   if (!token && pathname !== '/login') {
+//     return NextResponse.redirect(new URL('/', req.url));
+//   }
+
+
+//   return NextResponse.next(); // Allow access to the requested page if authenticated
+// }
+
+// // Apply middleware to all routes except static assets and API routes
+// export const config = {
+//   matcher: [
+//     '/((?!api|_next/static|_next/image|favicon.ico).*)', // Exclude static files, API routes, and favicon
+//   ],
 };
