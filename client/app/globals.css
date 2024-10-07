@@ -6,6 +6,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.login-bg{
+  background: linear-gradient(to right, #a6e672 0%, #45dd78 100%);
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
